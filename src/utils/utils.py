@@ -182,22 +182,13 @@ model_names = {
 
 
 # Callback to update the model name dropdown based on the selected provider
-def update_model_dropdown(llm_provider, api_key=None, base_url=None):
-    """
-    Update the model name dropdown with predefined models for the selected provider.
-    """
-    import gradio as gr
-    # Use API keys from .env if not provided
-    if not api_key:
-        api_key = os.getenv(f"{llm_provider.upper()}_API_KEY", "")
-    if not base_url:
-        base_url = os.getenv(f"{llm_provider.upper()}_BASE_URL", "")
-
-    # Use predefined models for the selected provider
-    if llm_provider in model_names:
-        return gr.Dropdown(choices=model_names[llm_provider], value=model_names[llm_provider][0], interactive=True)
-    else:
-        return gr.Dropdown(choices=[], value="", interactive=True, allow_custom_value=True)
+def update_model_dropdown(selected_provider, current_model):
+    """Update model choices based on provider."""
+    choices = model_names[selected_provider]
+    
+    if current_model not in choices and any(current_model in models for models in model_names.values()):
+        current_model = choices[0]
+    return gr.update(choices=choices, value=current_model)
 
 
 class MissingAPIKeyError(Exception):
